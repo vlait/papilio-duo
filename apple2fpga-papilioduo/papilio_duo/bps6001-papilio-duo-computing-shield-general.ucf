@@ -19,17 +19,17 @@ NET PS2_DAT      LOC="P120" | IOSTANDARD=LVTTL;                                #
 NET PS2_CLK      LOC="P121" | IOSTANDARD=LVTTL;                                # A5
 #NET JOYSTICK1_5   LOC="P123" | IOSTANDARD=LVTTL;                                # A6
 #NET JOYSTICK1_9   LOC="P124" | IOSTANDARD=LVTTL;                                # A7
-#NET JOYSTICK1_4   LOC="P126" | IOSTANDARD=LVTTL;                                # A8
-#NET JOYSTICK1_3   LOC="P127" | IOSTANDARD=LVTTL;                                # A9
+NET JOYSTICK1(0)   LOC="P126" | IOSTANDARD=LVTTL;                                # A8
+NET JOYSTICK1(1)   LOC="P127" | IOSTANDARD=LVTTL;                                # A9
 #NET JOYSTICK1_7   LOC="P131" | IOSTANDARD=LVTTL;                                # A10
-#NET JOYSTICK1_2   LOC="P132" | IOSTANDARD=LVTTL;                                # A11
-#NET JOYSTICK1_6   LOC="P133" | IOSTANDARD=LVTTL;                                # A12
-#NET JOYSTICK1_1   LOC="P134" | IOSTANDARD=LVTTL;                                # A13
+NET JOYSTICK1(2)   LOC="P132" | IOSTANDARD=LVTTL;                                # A11
+NET JOYSTICK1(4)   LOC="P133" | IOSTANDARD=LVTTL;                                # A12
+NET JOYSTICK1(3)   LOC="P134" | IOSTANDARD=LVTTL;                                # A13
 NET SD_CMD       LOC="P115" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B0
 NET SD_CLK        LOC="P114" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B1
 NET SD_DAT3        LOC="P112" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B2
-#NET SW_LEFT       LOC="P111" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B3
-#NET SW_UP         LOC="P105" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B4
+NET SW_LEFT       LOC="P111" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B3
+NET SW_UP         LOC="P105" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B4
 NET I_RESET         LOC="P102" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B5
 #NET SW_DOWN       LOC="P101" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B6
 #NET SW_RIGHT      LOC="P100" | IOSTANDARD=LVTTL | DRIVE=8 | SLEW=FAST;          # B7

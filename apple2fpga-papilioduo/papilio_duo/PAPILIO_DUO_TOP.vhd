@@ -72,8 +72,11 @@ entity PAPILIO_DUO_TOP is
     -- Audio OUT
     
     O_AUDIO_L : out std_logic;                          -- ADC Data
-	 O_AUDIO_R : out std_logic                          -- ADC Data
+	 O_AUDIO_R : out std_logic;                          -- ADC Data
     
+	 SW_LEFT : in std_logic;
+	 SW_UP : in std_logic;
+	 JOYSTICK1 : in std_logic_vector(4 downto 0)
     );
   
 end PAPILIO_DUO_TOP;
@@ -118,6 +121,10 @@ architecture datapath of PAPILIO_DUO_TOP is
   signal B_10 : unsigned(9 downto 0);
 
   signal CS_N, MOSI, MISO, SCLK : std_logic;
+  
+  signal PDL_STROBE : std_logic;
+  signal joy1_x, joy1_y : std_logic;
+  signal csjudlr1 : std_logic_vector(6 downto 0);
 
 begin
 
@@ -148,9 +155,59 @@ begin
 		O_CLK_28M	=> CLK_28M,
 		O_CLK_14M	=> CLK_14M
 		);
-  -- Paddle buttons
-  GAMEPORT <=  "0000" & "0000"; -- (not KEY(2 downto 0)) & "0";
+	
+  -- joystick inputs, these should probably be debounced first
+  csjudlr1 <= "00" & JOYSTICK1;	
 
+  -- Paddle buttons
+  -- GAMEPORT input bits:
+  --  7    6    5    4    3   2   1    0
+  -- pdl3 pdl2 pdl1 pdl0 pb3 pb2 pb1 casette
+  --            y    x   bt3 bt2 bt1
+  
+  -- Paddle buttons
+  GAMEPORT <=  "00" & joy1_y & joy1_x & SW_LEFT & SW_UP & not csjudlr1(4) & '0'; --"0000" & "0000"; -- (not KEY(2 downto 0)) & "0";
+  
+  -- fake analog joystick... 
+  -- PDL_STROBE starts the counter 
+  -- middle value for the joy pots is 127 * 11us ~ 2800 cycles (2M clock instead of 1 so we multiply by 2)
+  -- http://www.umich.edu/~archive/apple2/technotes/tn/aiie/TN.AIIE.006
+  
+  an_fake: process (CLK_2M, PDL_STROBE, joystick1)
+    variable xaxis : integer range 0 to 5700 := 0; -- 5700 is over 255 * 11us which should guarantee far end of joystick pot 
+	 variable yaxis : integer range 0 to 5700 := 0;
+  begin
+    if rising_edge(CLK_2M) then
+	   if PDL_STROBE = '1' then
+		  case (csjudlr1(1 downto 0)) is -- left and right
+		    when "10" => xaxis := 5700; -- computing shield has pullups 
+		    when "01" => xaxis := 10;
+          when others => xaxis := 2800;
+		  end case;
+		
+		  case (csjudlr1(3 downto 2)) is  -- up and down
+		    when "10" => yaxis := 5700; -- computing shield has pullups
+		    when "01" => yaxis := 10;
+          when others => yaxis := 2800;
+		  end case;
+	  else --counting down
+	    if xaxis > 0 then
+		  xaxis := xaxis - 1;
+		  joy1_x <= '1';
+		else
+		  joy1_x <= '0';
+		end if;
+		
+		if yaxis > 0 then
+		  yaxis := yaxis -1;
+		  joy1_y <= '1';
+		else 
+		  joy1_y <= '0';
+		end if;
+	end if;
+	end if;
+  end process;
+  
   COLOR_LINE_CONTROL <= COLOR_LINE ; --  could we use scroll lock ? and SW(9);  -- Color or B&W mode
   
   core : entity work.apple2 port map (
@@ -177,7 +234,8 @@ begin
     IO_SELECT      => IO_SELECT,
     DEVICE_SELECT  => DEVICE_SELECT,
     pcDebugOut     => cpu_pc,
-    speaker        => speaker
+    speaker        => speaker,
+	PDL_STROBE     => PDL_STROBE
     );
 
   vga : entity work.vga_controller port map (
