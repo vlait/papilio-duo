@@ -1,0 +1,18 @@
+W 10 ms
+K FF
+W 900 ms
+# Press F1
+K 05
+W 90 ms
+# Release F1
+K F0
+K 05
+W 400 ms
+# Press F5
+K 03
+W 90 ms
+# Release F5
+K F0
+K 03
+W 90 ms
+E

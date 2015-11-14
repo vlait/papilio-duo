@@ -1,0 +1,67 @@
+Williams Hardware Description
+-----------------------------
+
+
+The older Williams games (Defender, Stargate, Robotron, Joust, Bubbles and Sinistar) have very similar hardware inside.
+These machines have five PC boards:
+
+CPU/Video- the main board, containing the CPU, RAM and video circuits
+---------------------------------------------------------------------
+
+The game CPU is a Motorola 6809E, clocked at 1MHz. There are 24 4116 RAM chips, giving 48K of DRAM, most of which is
+used for the screen buffer (38K). On all games but Defender, RAM is always available from $9000 to $BFFF, and can be
+bank-switched with ROM from $0000-$8FFF. Except for Sinistar, the games have ROM from $D000-$FFFF; Sinistar has RAM
+at $D000-DFFF. Defender always has RAM from $0000-$BFFF. Other banks of ROM and I/O are bank-switched into $C000-$CFFF.
+
+There is also a 1K by 4-bit CMOS SRAM that is battery-backed-up (Bubbles has 8-bit SRAM). This retains the game
+configuration and high scores when the power is off. The first part of this RAM is write protected when the coin door
+is shut, so game configuration can't be changed without opening the door.
+
+The video circuit allows for 16 colors on the screen at once out of a total palette of 256 colors (3 bits of red,
+3 bits of green and 2 bits of blue). The color registers can be written by the CPU at any time, allowing for color
+cycling and fade effects. The resolution is 304 pixels by 256 pixels, 4 bits per pixel. There is a 14-bit video
+counter driven by a 1MHz clock that gets reloaded with 0x3F00 the first time it overflows, giving a total count of
+16640 in 16.64ms.
+
+There is a watchdog that resets the machine if the value 0x39 is not written to memory location 0xCBFF within 8
+vertical blanking periods (about 133 milliseconds).
+
+Memory address $C900 is used for a few miscellaneous things: bit 0 selects RAM or ROM in the memory space $0000-$8FFF.
+
+Bit 1 flips the screen for the 2nd player on a cocktail game. Bit 3 is used by Sinistar to protect the top part of the
+screen (the radar and scores) from being overwritten.
+
+ROM- program ROMs
+-----------------
+
+This board contains up to 12 4K ROMs, for 48K of ROM space. The ROMs in banks 0-8 can be bank-switched with RAM.
+The ROMs in banks D, E and F are always available. The ROM board also contains the two 4-bit blitter chips. These
+chips are able to move data around without the assistance of the CPU, which only has to set up the source, destination, 
+width and height. The blitters can move an entire rectangular block of data, or just the foreground graphics. They can
+also replace the graphics with a solid color.
+
+The ROM board PIA has 7 bits of input from the coin door, 7 bits of output going to the sound board and 4 bits of
+output to the diagnostic LED. This PIA is directly connected to the address and data buses, and is accessed at
+$C80C-C80F.
+
+Interface- game controller interface
+------------------------------------
+This board has two multiplexors to increase the number of inputs going to the 'widget' PIA. This PIA is directly
+connected to the address and data buses, and is accessed at $C804-C807.
+
+Sound- sound CPU and ROM
+------------------------
+The sound board uses an independant 6808 or 6802 CPU and supports one 2K or 4K ROM (addressed at $F000). It is
+connected to the game CPU by means of 7 sound/speech inputs. These feed to a PIA (at $0400), which interrupts the CPU
+to generate the sound effects. The CPU sends data back to the PIA, which outputs 8 bits to a digital to analog
+converter. The board has room for a 40-pin connector that the speech board attaches to.
+
+The speech board has two parts: the digital half is a ROM extender that can hold 4 2K or 4K ROMs. The analog half
+consists of a CVSD digital to analog converter whose output is mixed with the sound board's.
+
+Power supply- regulators and fuses
+----------------------------------
+The power supply board takes the reduced AC voltages from the large transformer in the bottom of the cabinet and
+rectifies and regulates them, producing +/- 5 volts, +/- 12 volts and +27 volts. 6.3 volts AC is also taken from the
+transformer for lighting. There are 3 LEDs on the power supply board: the top LED shows that +5 volts is working; the
+middles indicates +12 volts; and the bottom is for -5 volts.

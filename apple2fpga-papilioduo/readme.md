@@ -7,7 +7,7 @@ You'll need a Papilio DUO with the Classic Computing shield
 Consult the original readme in the source directory for usage instructions.
 
 Only one disk image is supported (no switches available)
-Joystick inputs are not connected (analog... )
+Joystick is digital instead of analog
 monitor type is not selectable (no switches)
 
 tbd - some sort of disk image selector
